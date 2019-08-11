@@ -15,46 +15,8 @@ function love.load(arg)
 
     world = love.physics.newWorld(0, 0)
 
-    leftPaddle = {
-        img = getCirclePaddle(paddleSize, {r = 0, g = 0, b = 1}),
-        touchid = nil
-    }
-    leftPaddle.body = love.physics.newBody(world, paddleSize * 1.5,
-                                           love.graphics.getHeight() / 2,
-                                           "dynamic")
-    leftPaddle.shape = love.physics.newCircleShape(paddleSize / 2)
-    leftPaddle.fixture = love.physics.newFixture(leftPaddle.body,
-                                                 leftPaddle.shape)
-    leftPaddle.joint = love.physics.newMouseJoint(leftPaddle.body,
-                                                  paddleSize * 1.5,
-                                                  love.graphics.getHeight() / 2)
-    rightPaddle = {
-        img = getCirclePaddle(paddleSize, {r = 1, g = 0, b = 0}),
-        touchid = nil
-    }
-    rightPaddle.body = love.physics.newBody(world, love.graphics.getWidth() -
-                                                (paddleSize * 1.5),
-                                            love.graphics.getHeight() / 2,
-                                            "dynamic")
-    rightPaddle.shape = love.physics.newCircleShape(paddleSize / 2)
-    rightPaddle.fixture = love.physics.newFixture(rightPaddle.body,
-                                                  rightPaddle.shape)
-    rightPaddle.joint = love.physics.newMouseJoint(rightPaddle.body,
-                                                   love.graphics.getWidth() -
-                                                       (paddleSize * 1.5),
-                                                   love.graphics.getHeight() / 2)
-
-    puck = {img = getCirclePaddle(puckSize, {r = 1, g = 1, b = 0})}
-    puck.body = love.physics.newBody(world, love.graphics.getWidth() / 2,
-                                     love.graphics.getHeight() / 2, "dynamic")
-    puck.shape = love.physics.newCircleShape(puckSize / 2)
-    puck.fixture = love.physics.newFixture(puck.body, puck.shape)
-    puck.fixture:setRestitution(.9)
-
-    table.insert(objects, leftPaddle)
-    table.insert(objects, rightPaddle)
-    table.insert(objects, puck)
-
+    createPaddles()
+    createPuck()
     createWalls()
 end
 
@@ -205,4 +167,49 @@ function setScale()
     wallThickness = wallThickness * sx
     puckSize = puckSize * sx
     centerLineThickness = centerLineThickness * sx
+end
+
+function createPaddles()
+    leftPaddle = {
+        img = getCirclePaddle(paddleSize, {r = 0, g = 0, b = 1}),
+        touchid = nil
+    }
+    leftPaddle.body = love.physics.newBody(world, paddleSize * 1.5,
+                                           love.graphics.getHeight() / 2,
+                                           "dynamic")
+    leftPaddle.shape = love.physics.newCircleShape(paddleSize / 2)
+    leftPaddle.fixture = love.physics.newFixture(leftPaddle.body,
+                                                 leftPaddle.shape)
+    leftPaddle.joint = love.physics.newMouseJoint(leftPaddle.body,
+                                                  paddleSize * 1.5,
+                                                  love.graphics.getHeight() / 2)
+    rightPaddle = {
+        img = getCirclePaddle(paddleSize, {r = 1, g = 0, b = 0}),
+        touchid = nil
+    }
+    rightPaddle.body = love.physics.newBody(world, love.graphics.getWidth() -
+                                                (paddleSize * 1.5),
+                                            love.graphics.getHeight() / 2,
+                                            "dynamic")
+    rightPaddle.shape = love.physics.newCircleShape(paddleSize / 2)
+    rightPaddle.fixture = love.physics.newFixture(rightPaddle.body,
+                                                  rightPaddle.shape)
+    rightPaddle.joint = love.physics.newMouseJoint(rightPaddle.body,
+                                                   love.graphics.getWidth() -
+                                                       (paddleSize * 1.5),
+                                                   love.graphics.getHeight() / 2)
+
+    table.insert(objects, leftPaddle)
+    table.insert(objects, rightPaddle)
+end
+
+function createPuck()
+    puck = {img = getCirclePaddle(puckSize, {r = 1, g = 1, b = 0})}
+    puck.body = love.physics.newBody(world, love.graphics.getWidth() / 2,
+                                     love.graphics.getHeight() / 2, "dynamic")
+    puck.shape = love.physics.newCircleShape(puckSize / 2)
+    puck.fixture = love.physics.newFixture(puck.body, puck.shape)
+    puck.fixture:setRestitution(.9)
+
+    table.insert(objects, puck)
 end
