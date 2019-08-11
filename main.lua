@@ -1,4 +1,6 @@
 debug = true
+screenWidth = love.graphics.getWidth()
+screenHeight = love.graphics.getHeight()
 
 updatetime = 0
 paddleSize = 200
@@ -35,6 +37,8 @@ function love.keypressed(key, scancode, isrepeat)
 
     if love.keyboard.isDown('escape') then
         love.event.push('quit')
+    elseif love.keyboard.isDown('r') then
+        resetPositions()
     end
 end
 
@@ -66,7 +70,7 @@ end
 
 function love.touchpressed(id, x, y, dx, dy, pressure)
     local isLeft = true
-    if (x > (love.graphics.getWidth() / 2)) then
+    if (x > (screenWidth / 2)) then
         isLeft = false
     end
 
@@ -80,9 +84,9 @@ function love.touchpressed(id, x, y, dx, dy, pressure)
 end
 
 function love.touchmoved(id, x, y, dx, dy, pressure)
-    if (leftPaddle.touchid == id and x <= love.graphics.getWidth() / 2) then
+    if (leftPaddle.touchid == id and x <= screenWidth / 2) then
         leftPaddle.joint:setTarget(x, y)
-    elseif (rightPaddle.touchid == id and x > love.graphics.getWidth() / 2) then
+    elseif (rightPaddle.touchid == id and x > screenWidth / 2) then
         rightPaddle.joint:setTarget(x, y)
     end
 end
@@ -116,25 +120,27 @@ function getRectangle(width, height, color)
 end
 
 function createWalls()
-    local sw = love.graphics.getWidth()
-    local sh = love.graphics.getHeight()
+    wallT = {
+        img = getRectangle(screenWidth, wallThickness, {r = 1, g = 1, b = 0})
+    }
 
-    wallT = {img = getRectangle(sw, wallThickness, {r = 1, g = 1, b = 0})}
-
-    wallT.body = love.physics
-                     .newBody(world, sw / 2, wallThickness / 2, "static")
-    wallT.shape = love.physics.newRectangleShape(sw, wallThickness)
+    wallT.body = love.physics.newBody(world, screenWidth / 2, wallThickness / 2,
+                                      "static")
+    wallT.shape = love.physics.newRectangleShape(screenWidth, wallThickness)
     wallT.fixture = love.physics.newFixture(wallT.body, wallT.shape)
     table.insert(objects, wallT)
 
-    wallB = {img = getRectangle(sw, wallThickness, {r = 1, g = 1, b = 0})}
-    wallB.body = love.physics.newBody(world, sw / 2, sh - (wallThickness / 2),
+    wallB = {
+        img = getRectangle(screenWidth, wallThickness, {r = 1, g = 1, b = 0})
+    }
+    wallB.body = love.physics.newBody(world, screenWidth / 2,
+                                      screenHeight - (wallThickness / 2),
                                       "static")
-    wallB.shape = love.physics.newRectangleShape(sw, wallThickness)
+    wallB.shape = love.physics.newRectangleShape(screenWidth, wallThickness)
     wallB.fixture = love.physics.newFixture(wallB.body, wallB.shape)
     table.insert(objects, wallB)
 
-    local goalWallSegmentHeight = (sh - goalSize) / 2
+    local goalWallSegmentHeight = (screenHeight - goalSize) / 2
     wallLT = {
         img = getRectangle(wallThickness, goalWallSegmentHeight,
                            {r = 1, g = 1, b = 0})
@@ -150,21 +156,20 @@ function createWalls()
         img = getRectangle(wallThickness, goalWallSegmentHeight,
                            {r = 1, g = 1, b = 0})
     }
-    wallLB.body = love.physics.newBody(world, wallThickness / 2,
-                                       sh - (goalWallSegmentHeight / 2),
-                                       "static")
+    wallLB.body = love.physics.newBody(world, wallThickness / 2, screenHeight -
+                                           (goalWallSegmentHeight / 2), "static")
     wallLB.shape = love.physics.newRectangleShape(wallThickness,
                                                   goalWallSegmentHeight)
     wallLB.fixture = love.physics.newFixture(wallLB.body, wallLB.shape)
     table.insert(objects, wallLB)
 
     -- left and right walls with goal holes
-    local goalWallSegmentHeight = (sh - goalSize) / 2
+    local goalWallSegmentHeight = (screenHeight - goalSize) / 2
     wallRT = {
         img = getRectangle(wallThickness, goalWallSegmentHeight,
                            {r = 1, g = 1, b = 0})
     }
-    wallRT.body = love.physics.newBody(world, sw - (wallThickness / 2),
+    wallRT.body = love.physics.newBody(world, screenWidth - (wallThickness / 2),
                                        goalWallSegmentHeight / 2, "static")
     wallRT.shape = love.physics.newRectangleShape(wallThickness,
                                                   goalWallSegmentHeight)
@@ -175,9 +180,9 @@ function createWalls()
         img = getRectangle(wallThickness, goalWallSegmentHeight,
                            {r = 1, g = 1, b = 0})
     }
-    wallRB.body = love.physics.newBody(world, sw - (wallThickness / 2),
-                                       sh - (goalWallSegmentHeight / 2),
-                                       "static")
+    wallRB.body = love.physics.newBody(world, screenWidth - (wallThickness / 2),
+                                       screenHeight -
+                                           (goalWallSegmentHeight / 2), "static")
     wallRB.shape = love.physics.newRectangleShape(wallThickness,
                                                   goalWallSegmentHeight)
     wallRB.fixture = love.physics.newFixture(wallRB.body, wallRB.shape)
@@ -201,29 +206,27 @@ function createPaddles()
         touchid = nil
     }
     leftPaddle.body = love.physics.newBody(world, paddleSize * 1.5,
-                                           love.graphics.getHeight() / 2,
-                                           "dynamic")
+                                           screenHeight / 2, "dynamic")
     leftPaddle.shape = love.physics.newCircleShape(paddleSize / 2)
     leftPaddle.fixture = love.physics.newFixture(leftPaddle.body,
                                                  leftPaddle.shape)
     leftPaddle.joint = love.physics.newMouseJoint(leftPaddle.body,
                                                   paddleSize * 1.5,
-                                                  love.graphics.getHeight() / 2)
+                                                  screenHeight / 2)
     rightPaddle = {
         img = getCirclePaddle(paddleSize, {r = 1, g = 0, b = 0}),
         touchid = nil
     }
-    rightPaddle.body = love.physics.newBody(world, love.graphics.getWidth() -
-                                                (paddleSize * 1.5),
-                                            love.graphics.getHeight() / 2,
-                                            "dynamic")
+    rightPaddle.body = love.physics.newBody(world,
+                                            screenWidth - (paddleSize * 1.5),
+                                            screenHeight / 2, "dynamic")
     rightPaddle.shape = love.physics.newCircleShape(paddleSize / 2)
     rightPaddle.fixture = love.physics.newFixture(rightPaddle.body,
                                                   rightPaddle.shape)
     rightPaddle.joint = love.physics.newMouseJoint(rightPaddle.body,
-                                                   love.graphics.getWidth() -
+                                                   screenWidth -
                                                        (paddleSize * 1.5),
-                                                   love.graphics.getHeight() / 2)
+                                                   screenHeight / 2)
 
     table.insert(objects, leftPaddle)
     table.insert(objects, rightPaddle)
@@ -231,8 +234,8 @@ end
 
 function createPuck()
     puck = {img = getCirclePaddle(puckSize, {r = 1, g = 1, b = 0})}
-    puck.body = love.physics.newBody(world, love.graphics.getWidth() / 2,
-                                     love.graphics.getHeight() / 2, "dynamic")
+    puck.body = love.physics.newBody(world, screenWidth / 2, screenHeight / 2,
+                                     "dynamic")
     puck.shape = love.physics.newCircleShape(puckSize / 2)
     puck.fixture = love.physics.newFixture(puck.body, puck.shape)
     puck.fixture:setRestitution(.9)
@@ -250,4 +253,10 @@ function createGoals()
 
     -- table.insert(objects, leftGoal)
     -- table.insert(objects, rightGoal)
+end
+
+function resetPositions()
+    puck.body:setLinearVelocity(0, 0)
+    puck.body:setX(screenWidth / 2)
+    puck.body:setY(screenHeight / 2)
 end
