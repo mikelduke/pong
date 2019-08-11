@@ -1,10 +1,11 @@
-debug = false
+debug = true
 
 updatetime = 0
 paddleSize = 200
 puckSize = 75
 wallThickness = 10
 centerLineThickness = 10
+goalSize = 300
 
 world = nil
 
@@ -18,6 +19,7 @@ function love.load(arg)
     createPaddles()
     createPuck()
     createWalls()
+    createGoals()
 end
 
 function love.update(dt)
@@ -45,6 +47,8 @@ function love.draw()
                                 "x" .. tostring(love.graphics.getHeight()) ..
                                 " scale " .. tostring(sx) .. "x" .. tostring(sy),
                             10, 30)
+        love.graphics.print("Puck " .. tostring(puck.body:getX()) .. ", " ..
+                                tostring(puck.body:getY()), 10, 40)
     end
 
     -- center line
@@ -112,51 +116,72 @@ function getRectangle(width, height, color)
 end
 
 function createWalls()
-    wallT = {
-        img = getRectangle(love.graphics.getWidth(), wallThickness,
-                           {r = 1, g = 1, b = 0})
-    }
-    wallT.body = love.physics.newBody(world, love.graphics.getWidth() / 2,
-                                      wallThickness / 2, "static")
-    wallT.shape = love.physics.newRectangleShape(love.graphics.getWidth(),
-                                                 wallThickness)
+    local sw = love.graphics.getWidth()
+    local sh = love.graphics.getHeight()
+
+    wallT = {img = getRectangle(sw, wallThickness, {r = 1, g = 1, b = 0})}
+
+    wallT.body = love.physics
+                     .newBody(world, sw / 2, wallThickness / 2, "static")
+    wallT.shape = love.physics.newRectangleShape(sw, wallThickness)
     wallT.fixture = love.physics.newFixture(wallT.body, wallT.shape)
     table.insert(objects, wallT)
 
-    wallB = {
-        img = getRectangle(love.graphics.getWidth(), wallThickness,
-                           {r = 1, g = 1, b = 0})
-    }
-    wallB.body = love.physics.newBody(world, love.graphics.getWidth() / 2,
-                                      love.graphics.getHeight() -
-                                          (wallThickness / 2), "static")
-    wallB.shape = love.physics.newRectangleShape(love.graphics.getWidth(),
-                                                 wallThickness)
+    wallB = {img = getRectangle(sw, wallThickness, {r = 1, g = 1, b = 0})}
+    wallB.body = love.physics.newBody(world, sw / 2, sh - (wallThickness / 2),
+                                      "static")
+    wallB.shape = love.physics.newRectangleShape(sw, wallThickness)
     wallB.fixture = love.physics.newFixture(wallB.body, wallB.shape)
     table.insert(objects, wallB)
 
-    wallL = {
-        img = getRectangle(wallThickness, love.graphics.getHeight(),
+    local goalWallSegmentHeight = (sh - goalSize) / 2
+    wallLT = {
+        img = getRectangle(wallThickness, goalWallSegmentHeight,
                            {r = 1, g = 1, b = 0})
     }
-    wallL.body = love.physics.newBody(world, wallThickness / 2,
-                                      love.graphics.getHeight() / 2, "static")
-    wallL.shape = love.physics.newRectangleShape(wallThickness,
-                                                 love.graphics.getHeight())
-    wallL.fixture = love.physics.newFixture(wallL.body, wallL.shape)
-    table.insert(objects, wallL)
+    wallLT.body = love.physics.newBody(world, wallThickness / 2,
+                                       goalWallSegmentHeight / 2, "static")
+    wallLT.shape = love.physics.newRectangleShape(wallThickness,
+                                                  goalWallSegmentHeight)
+    wallLT.fixture = love.physics.newFixture(wallLT.body, wallLT.shape)
+    table.insert(objects, wallLT)
 
-    wallR = {
-        img = getRectangle(wallThickness, love.graphics.getHeight(),
+    wallLB = {
+        img = getRectangle(wallThickness, goalWallSegmentHeight,
                            {r = 1, g = 1, b = 0})
     }
-    wallR.body = love.physics.newBody(world, love.graphics.getWidth() -
-                                          (wallThickness / 2),
-                                      love.graphics.getHeight() / 2, "static")
-    wallR.shape = love.physics.newRectangleShape(wallThickness,
-                                                 love.graphics.getHeight())
-    wallR.fixture = love.physics.newFixture(wallR.body, wallR.shape)
-    table.insert(objects, wallR)
+    wallLB.body = love.physics.newBody(world, wallThickness / 2,
+                                       sh - (goalWallSegmentHeight / 2),
+                                       "static")
+    wallLB.shape = love.physics.newRectangleShape(wallThickness,
+                                                  goalWallSegmentHeight)
+    wallLB.fixture = love.physics.newFixture(wallLB.body, wallLB.shape)
+    table.insert(objects, wallLB)
+
+    -- left and right walls with goal holes
+    local goalWallSegmentHeight = (sh - goalSize) / 2
+    wallRT = {
+        img = getRectangle(wallThickness, goalWallSegmentHeight,
+                           {r = 1, g = 1, b = 0})
+    }
+    wallRT.body = love.physics.newBody(world, sw - (wallThickness / 2),
+                                       goalWallSegmentHeight / 2, "static")
+    wallRT.shape = love.physics.newRectangleShape(wallThickness,
+                                                  goalWallSegmentHeight)
+    wallRT.fixture = love.physics.newFixture(wallRT.body, wallRT.shape)
+    table.insert(objects, wallRT)
+
+    wallRB = {
+        img = getRectangle(wallThickness, goalWallSegmentHeight,
+                           {r = 1, g = 1, b = 0})
+    }
+    wallRB.body = love.physics.newBody(world, sw - (wallThickness / 2),
+                                       sh - (goalWallSegmentHeight / 2),
+                                       "static")
+    wallRB.shape = love.physics.newRectangleShape(wallThickness,
+                                                  goalWallSegmentHeight)
+    wallRB.fixture = love.physics.newFixture(wallRB.body, wallRB.shape)
+    table.insert(objects, wallRB)
 end
 
 function setScale()
@@ -167,6 +192,7 @@ function setScale()
     wallThickness = wallThickness * sx
     puckSize = puckSize * sx
     centerLineThickness = centerLineThickness * sx
+    goalSize = goalSize * sy
 end
 
 function createPaddles()
@@ -212,4 +238,16 @@ function createPuck()
     puck.fixture:setRestitution(.9)
 
     table.insert(objects, puck)
+end
+
+function createGoals()
+    -- leftGoal = {
+    --     img = getRectangle(goalSize.w, goalSize.h, {r = 0, g = 0, b = 1})
+    -- }
+    -- rightGoal = {
+    --     img = getRectangle(goalSize.w, goalSize.h, {r = 1, g = 0, b = 0})
+    -- }
+
+    -- table.insert(objects, leftGoal)
+    -- table.insert(objects, rightGoal)
 end
