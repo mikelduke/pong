@@ -1,7 +1,8 @@
-debug = false
+debug = true
 
 updatetime = 0
 paddleSize = 200
+puckSize = 75
 
 function love.load(arg)
     leftPaddle = {
@@ -12,6 +13,12 @@ function love.load(arg)
     rightPaddle = {
         img = getCirclePaddle(paddleSize, {r = 1, g = 0, b = 0}),
         x = love.graphics.getWidth(),
+        y = love.graphics.getHeight() / 2
+    }
+
+    puck = {
+        img = getCirclePaddle(puckSize, {r = 1, g = 1, b = 0}),
+        x = love.graphics.getWidth() / 2,
         y = love.graphics.getHeight() / 2
     }
 end
@@ -52,6 +59,9 @@ function love.draw()
     love.graphics.draw(rightPaddle.img, rightPaddle.x, rightPaddle.y, 0, 1, 1,
                        rightPaddle.img:getWidth() / 2,
                        rightPaddle.img:getHeight() / 2)
+
+    love.graphics.draw(puck.img, puck.x, puck.y, 0, 1, 1,
+                       puck.img:getWidth() / 2, puck.img:getHeight() / 2)
 end
 
 function love.touchpressed(id, x, y, dx, dy, pressure)
