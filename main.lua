@@ -46,6 +46,7 @@ function love.load(arg)
                                      love.graphics.getHeight() / 2, "dynamic")
     puck.shape = love.physics.newCircleShape(puckSize / 2)
     puck.fixture = love.physics.newFixture(puck.body, puck.shape)
+    puck.fixture:setRestitution(.9)
 
     table.insert(objects, leftPaddle)
     table.insert(objects, rightPaddle)
@@ -73,11 +74,11 @@ end
 function love.draw()
     if debug then
         love.graphics.setColor(1, 1, 1)
-        love.graphics.print("DT: " .. tostring(updatetime), 0, 0)
-        love.graphics.print("FPS: " .. tostring(1.0 / updatetime), 0, 10)
+        love.graphics.print("DT: " .. tostring(updatetime), 10, 10)
+        love.graphics.print("FPS: " .. tostring(1.0 / updatetime), 10, 20)
         love.graphics.print("Screen " .. tostring(love.graphics.getWidth()) ..
-                                "x" .. tostring(love.graphics.getHeight()), 0,
-                            20)
+                                "x" .. tostring(love.graphics.getHeight()), 10,
+                            30)
     end
 
     -- center line
