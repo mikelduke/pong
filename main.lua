@@ -28,6 +28,12 @@ function love.update(dt)
     updatetime = dt
 
     world:update(dt)
+
+    if (puck.body:getX() < 0) then
+        resetPuck()
+    elseif (puck.body:getX() > screenWidth) then
+        resetPuck()
+    end
 end
 
 function love.keypressed(key, scancode, isrepeat)
@@ -38,7 +44,7 @@ function love.keypressed(key, scancode, isrepeat)
     if love.keyboard.isDown('escape') then
         love.event.push('quit')
     elseif love.keyboard.isDown('r') then
-        resetPositions()
+        resetPuck()
     end
 end
 
@@ -255,7 +261,7 @@ function createGoals()
     -- table.insert(objects, rightGoal)
 end
 
-function resetPositions()
+function resetPuck()
     puck.body:setLinearVelocity(0, 0)
     puck.body:setX(screenWidth / 2)
     puck.body:setY(screenHeight / 2)
