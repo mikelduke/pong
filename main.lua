@@ -79,19 +79,7 @@ function love.draw()
     love.graphics.rectangle("fill", love.graphics.getWidth() / 2 - 10, 0, 20,
                             love.graphics.getHeight())
 
-    -- love.graphics.draw(leftPaddle.img, leftPaddle.body:getX(),
-    --                    leftPaddle.body:getY(), 0, 1, 1,
-    --                    leftPaddle.img:getWidth() / 2,
-    --                    leftPaddle.img:getHeight() / 2)
-
-    -- love.graphics.draw(rightPaddle.img, rightPaddle.body:getX(),
-    --                    rightPaddle.body:getY(), 0, 1, 1,
-    --                    rightPaddle.img:getWidth() / 2,
-    --                    rightPaddle.img:getHeight() / 2)
-
-    -- love.graphics.draw(puck.img, puck.x, puck.y, 0, 1, 1,
-    --                    puck.img:getWidth() / 2, puck.img:getHeight() / 2)
-
+    -- puck and paddles
     for i, o in ipairs(objects) do
         love.graphics.draw(o.img, o.body:getX(), o.body:getY(), 0, 1, 1,
                            o.img:getWidth() / 2, o.img:getHeight() / 2)
