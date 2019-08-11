@@ -3,6 +3,7 @@ debug = true
 updatetime = 0
 paddleSize = 200
 puckSize = 75
+wallThickness = 10
 
 world = nil
 
@@ -15,26 +16,29 @@ function love.load(arg)
         img = getCirclePaddle(paddleSize, {r = 0, g = 0, b = 1}),
         touchid = nil
     }
-    leftPaddle.body = love.physics.newBody(world, 0,
+    leftPaddle.body = love.physics.newBody(world, paddleSize * 1.5,
                                            love.graphics.getHeight() / 2,
                                            "dynamic")
     leftPaddle.shape = love.physics.newCircleShape(paddleSize / 2)
     leftPaddle.fixture = love.physics.newFixture(leftPaddle.body,
                                                  leftPaddle.shape)
-    leftPaddle.joint = love.physics.newMouseJoint(leftPaddle.body, 0,
+    leftPaddle.joint = love.physics.newMouseJoint(leftPaddle.body,
+                                                  paddleSize * 1.5,
                                                   love.graphics.getHeight() / 2)
     rightPaddle = {
         img = getCirclePaddle(paddleSize, {r = 1, g = 0, b = 0}),
         touchid = nil
     }
-    rightPaddle.body = love.physics.newBody(world, love.graphics.getWidth(),
+    rightPaddle.body = love.physics.newBody(world, love.graphics.getWidth() -
+                                                (paddleSize * 1.5),
                                             love.graphics.getHeight() / 2,
                                             "dynamic")
     rightPaddle.shape = love.physics.newCircleShape(paddleSize / 2)
     rightPaddle.fixture = love.physics.newFixture(rightPaddle.body,
                                                   rightPaddle.shape)
     rightPaddle.joint = love.physics.newMouseJoint(rightPaddle.body,
-                                                   love.graphics.getWidth(),
+                                                   love.graphics.getWidth() -
+                                                       (paddleSize * 1.5),
                                                    love.graphics.getHeight() / 2)
 
     puck = {img = getCirclePaddle(puckSize, {r = 1, g = 1, b = 0})}
@@ -46,6 +50,8 @@ function love.load(arg)
     table.insert(objects, leftPaddle)
     table.insert(objects, rightPaddle)
     table.insert(objects, puck)
+
+    createWalls()
 end
 
 function love.update(dt)
@@ -126,4 +132,61 @@ function getCirclePaddle(size, color)
 
     love.graphics.setCanvas()
     return paddle
+end
+
+function getRectangle(width, height, color)
+    local rect = love.graphics.newCanvas(width, height)
+    love.graphics.setCanvas(rect)
+    love.graphics.setColor(color.r, color.g, color.b)
+    love.graphics.rectangle("fill", 0, 0, width, height)
+    love.graphics.setCanvas()
+    return rect
+end
+
+function createWalls()
+    wallT = {
+        img = getRectangle(love.graphics.getWidth(), wallThickness,
+                           {r = 1, g = 1, b = 0})
+    }
+    wallT.body = love.physics.newBody(world, love.graphics.getWidth() / 2,
+                                      wallThickness / 2, "static")
+    wallT.shape = love.physics.newRectangleShape(love.graphics.getWidth(),
+                                                 wallThickness)
+    wallT.fixture = love.physics.newFixture(wallT.body, wallT.shape)
+    table.insert(objects, wallT)
+
+    wallB = {
+        img = getRectangle(love.graphics.getWidth(), wallThickness,
+                           {r = 1, g = 1, b = 0})
+    }
+    wallB.body = love.physics.newBody(world, love.graphics.getWidth() / 2,
+                                      love.graphics.getHeight() -
+                                          (wallThickness / 2), "static")
+    wallB.shape = love.physics.newRectangleShape(love.graphics.getWidth(),
+                                                 wallThickness)
+    wallB.fixture = love.physics.newFixture(wallB.body, wallB.shape)
+    table.insert(objects, wallB)
+
+    wallL = {
+        img = getRectangle(wallThickness, love.graphics.getHeight(),
+                           {r = 1, g = 1, b = 0})
+    }
+    wallL.body = love.physics.newBody(world, wallThickness / 2,
+                                      love.graphics.getHeight() / 2, "static")
+    wallL.shape = love.physics.newRectangleShape(wallThickness,
+                                                 love.graphics.getHeight())
+    wallL.fixture = love.physics.newFixture(wallL.body, wallL.shape)
+    table.insert(objects, wallL)
+
+    wallR = {
+        img = getRectangle(wallThickness, love.graphics.getHeight(),
+                           {r = 1, g = 1, b = 0})
+    }
+    wallR.body = love.physics.newBody(world, love.graphics.getWidth() -
+                                          (wallThickness / 2),
+                                      love.graphics.getHeight() / 2, "static")
+    wallR.shape = love.physics.newRectangleShape(wallThickness,
+                                                 love.graphics.getHeight())
+    wallR.fixture = love.physics.newFixture(wallR.body, wallR.shape)
+    table.insert(objects, wallR)
 end
