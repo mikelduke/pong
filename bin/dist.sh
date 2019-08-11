@@ -4,10 +4,12 @@
 
 ./bin/assemble.sh
 
-echo "Making .love dist"
+NAME="air-hockey"
+
+echo "Making $NAME.love dist"
 
 cd temp
-zip -9 -r magic-shapes.love .
-cp magic-shapes.love ../dist
+zip -9 -r $NAME.love .
+cp $NAME.love ../dist
 
 echo 'done'
