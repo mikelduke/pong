@@ -13,6 +13,8 @@ world = nil
 
 objects = {}
 
+score = {left = 0, right = 0}
+
 function love.load(arg)
     setScale()
 
@@ -31,8 +33,10 @@ function love.update(dt)
 
     if (puck.body:getX() < 0) then
         resetPuck()
+        score.right = score.right + 1
     elseif (puck.body:getX() > screenWidth) then
         resetPuck()
+        score.left = score.left + 1
     end
 end
 
@@ -45,6 +49,8 @@ function love.keypressed(key, scancode, isrepeat)
         love.event.push('quit')
     elseif love.keyboard.isDown('r') then
         resetPuck()
+        score.left = 0
+        score.right = 0
     end
 end
 
@@ -59,7 +65,17 @@ function love.draw()
                             10, 30)
         love.graphics.print("Puck " .. tostring(puck.body:getX()) .. ", " ..
                                 tostring(puck.body:getY()), 10, 40)
+        love.graphics.print("Score " .. tostring(score.left) .. ":" ..
+                                tostring(score.right), 10, 50)
     end
+
+    love.graphics.setColor(0, 0, 1)
+    love.graphics.print(tostring(score.left), 10, screenHeight - (150 * sy), 0,
+                        10, 10)
+    love.graphics.setColor(1, 0, 0)
+    love.graphics.print(tostring(score.right), screenWidth - (100 * sx),
+                        screenHeight - (150 * sy), 0, 10, 10)
+    love.graphics.setColor(1, 1, 1)
 
     -- center line
     love.graphics.setColor(1, 1, 1)
