@@ -6,6 +6,8 @@ puckSize = 75
 
 world = nil
 
+objects = {}
+
 function love.load(arg)
     world = love.physics.newWorld(0, 0)
 
@@ -35,11 +37,15 @@ function love.load(arg)
                                                    love.graphics.getWidth(),
                                                    love.graphics.getHeight() / 2)
 
-    puck = {
-        img = getCirclePaddle(puckSize, {r = 1, g = 1, b = 0}),
-        x = love.graphics.getWidth() / 2,
-        y = love.graphics.getHeight() / 2
-    }
+    puck = {img = getCirclePaddle(puckSize, {r = 1, g = 1, b = 0})}
+    puck.body = love.physics.newBody(world, love.graphics.getWidth() / 2,
+                                     love.graphics.getHeight() / 2, "dynamic")
+    puck.shape = love.physics.newCircleShape(puckSize / 2)
+    puck.fixture = love.physics.newFixture(puck.body, puck.shape)
+
+    table.insert(objects, leftPaddle)
+    table.insert(objects, rightPaddle)
+    table.insert(objects, puck)
 end
 
 function love.update(dt)
@@ -73,18 +79,23 @@ function love.draw()
     love.graphics.rectangle("fill", love.graphics.getWidth() / 2 - 10, 0, 20,
                             love.graphics.getHeight())
 
-    love.graphics.draw(leftPaddle.img, leftPaddle.body:getX(),
-                       leftPaddle.body:getY(), 0, 1, 1,
-                       leftPaddle.img:getWidth() / 2,
-                       leftPaddle.img:getHeight() / 2)
+    -- love.graphics.draw(leftPaddle.img, leftPaddle.body:getX(),
+    --                    leftPaddle.body:getY(), 0, 1, 1,
+    --                    leftPaddle.img:getWidth() / 2,
+    --                    leftPaddle.img:getHeight() / 2)
 
-    love.graphics.draw(rightPaddle.img, rightPaddle.body:getX(),
-                       rightPaddle.body:getY(), 0, 1, 1,
-                       rightPaddle.img:getWidth() / 2,
-                       rightPaddle.img:getHeight() / 2)
+    -- love.graphics.draw(rightPaddle.img, rightPaddle.body:getX(),
+    --                    rightPaddle.body:getY(), 0, 1, 1,
+    --                    rightPaddle.img:getWidth() / 2,
+    --                    rightPaddle.img:getHeight() / 2)
 
-    love.graphics.draw(puck.img, puck.x, puck.y, 0, 1, 1,
-                       puck.img:getWidth() / 2, puck.img:getHeight() / 2)
+    -- love.graphics.draw(puck.img, puck.x, puck.y, 0, 1, 1,
+    --                    puck.img:getWidth() / 2, puck.img:getHeight() / 2)
+
+    for i, o in ipairs(objects) do
+        love.graphics.draw(o.img, o.body:getX(), o.body:getY(), 0, 1, 1,
+                           o.img:getWidth() / 2, o.img:getHeight() / 2)
+    end
 end
 
 function love.touchpressed(id, x, y, dx, dy, pressure)
