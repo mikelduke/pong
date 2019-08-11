@@ -4,17 +4,36 @@ updatetime = 0
 paddleSize = 200
 puckSize = 75
 
+world = nil
+
 function love.load(arg)
+    world = love.physics.newWorld(0, 0)
+
     leftPaddle = {
         img = getCirclePaddle(paddleSize, {r = 0, g = 0, b = 1}),
-        x = 0,
-        y = love.graphics.getHeight() / 2
+        touchid = nil
     }
+    leftPaddle.body = love.physics.newBody(world, 0,
+                                           love.graphics.getHeight() / 2,
+                                           "dynamic")
+    leftPaddle.shape = love.physics.newCircleShape(paddleSize / 2)
+    leftPaddle.fixture = love.physics.newFixture(leftPaddle.body,
+                                                 leftPaddle.shape)
+    leftPaddle.joint = love.physics.newMouseJoint(leftPaddle.body, 0,
+                                                  love.graphics.getHeight() / 2)
     rightPaddle = {
         img = getCirclePaddle(paddleSize, {r = 1, g = 0, b = 0}),
-        x = love.graphics.getWidth(),
-        y = love.graphics.getHeight() / 2
+        touchid = nil
     }
+    rightPaddle.body = love.physics.newBody(world, love.graphics.getWidth(),
+                                            love.graphics.getHeight() / 2,
+                                            "dynamic")
+    rightPaddle.shape = love.physics.newCircleShape(paddleSize / 2)
+    rightPaddle.fixture = love.physics.newFixture(rightPaddle.body,
+                                                  rightPaddle.shape)
+    rightPaddle.joint = love.physics.newMouseJoint(rightPaddle.body,
+                                                   love.graphics.getWidth(),
+                                                   love.graphics.getHeight() / 2)
 
     puck = {
         img = getCirclePaddle(puckSize, {r = 1, g = 1, b = 0}),
@@ -25,6 +44,8 @@ end
 
 function love.update(dt)
     updatetime = dt
+
+    world:update(dt)
 end
 
 function love.keypressed(key, scancode, isrepeat)
@@ -52,11 +73,13 @@ function love.draw()
     love.graphics.rectangle("fill", love.graphics.getWidth() / 2 - 10, 0, 20,
                             love.graphics.getHeight())
 
-    love.graphics.draw(leftPaddle.img, leftPaddle.x, leftPaddle.y, 0, 1, 1,
+    love.graphics.draw(leftPaddle.img, leftPaddle.body:getX(),
+                       leftPaddle.body:getY(), 0, 1, 1,
                        leftPaddle.img:getWidth() / 2,
                        leftPaddle.img:getHeight() / 2)
 
-    love.graphics.draw(rightPaddle.img, rightPaddle.x, rightPaddle.y, 0, 1, 1,
+    love.graphics.draw(rightPaddle.img, rightPaddle.body:getX(),
+                       rightPaddle.body:getY(), 0, 1, 1,
                        rightPaddle.img:getWidth() / 2,
                        rightPaddle.img:getHeight() / 2)
 
@@ -71,23 +94,19 @@ function love.touchpressed(id, x, y, dx, dy, pressure)
     end
 
     if (isLeft and leftPaddle.touchid == nil) then
-        leftPaddle.x = x
-        leftPaddle.y = y
         leftPaddle.touchid = id
+        leftPaddle.joint:setTarget(x, y)
     elseif (not isLeft and rightPaddle.touchid == nil) then
-        rightPaddle.x = x
-        rightPaddle.y = y
         rightPaddle.touchid = id
+        rightPaddle.joint:setTarget(x, y)
     end
 end
 
 function love.touchmoved(id, x, y, dx, dy, pressure)
     if (leftPaddle.touchid == id and x <= love.graphics.getWidth() / 2) then
-        leftPaddle.x = x
-        leftPaddle.y = y
+        leftPaddle.joint:setTarget(x, y)
     elseif (rightPaddle.touchid == id and x > love.graphics.getWidth() / 2) then
-        rightPaddle.x = x
-        rightPaddle.y = y
+        rightPaddle.joint:setTarget(x, y)
     end
 end
 
