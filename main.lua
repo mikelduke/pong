@@ -1,15 +1,18 @@
-debug = true
+debug = false
 
 updatetime = 0
 paddleSize = 200
 puckSize = 75
 wallThickness = 10
+centerLineThickness = 10
 
 world = nil
 
 objects = {}
 
 function love.load(arg)
+    setScale()
+
     world = love.physics.newWorld(0, 0)
 
     leftPaddle = {
@@ -77,14 +80,16 @@ function love.draw()
         love.graphics.print("DT: " .. tostring(updatetime), 10, 10)
         love.graphics.print("FPS: " .. tostring(1.0 / updatetime), 10, 20)
         love.graphics.print("Screen " .. tostring(love.graphics.getWidth()) ..
-                                "x" .. tostring(love.graphics.getHeight()), 10,
-                            30)
+                                "x" .. tostring(love.graphics.getHeight()) ..
+                                " scale " .. tostring(sx) .. "x" .. tostring(sy),
+                            10, 30)
     end
 
     -- center line
     love.graphics.setColor(1, 1, 1)
-    love.graphics.rectangle("fill", love.graphics.getWidth() / 2 - 10, 0, 20,
-                            love.graphics.getHeight())
+    love.graphics.rectangle("fill", love.graphics.getWidth() / 2 -
+                                (centerLineThickness / 2), 0,
+                            centerLineThickness, love.graphics.getHeight())
 
     -- puck and paddles
     for i, o in ipairs(objects) do
@@ -190,4 +195,14 @@ function createWalls()
                                                  love.graphics.getHeight())
     wallR.fixture = love.physics.newFixture(wallR.body, wallR.shape)
     table.insert(objects, wallR)
+end
+
+function setScale()
+    local width, height = love.graphics.getDimensions()
+    sx = width / 1920
+    sy = height / 1080
+    paddleSize = paddleSize * sx
+    wallThickness = wallThickness * sx
+    puckSize = puckSize * sx
+    centerLineThickness = centerLineThickness * sx
 end
