@@ -1,4 +1,4 @@
-debug = true
+debug = false
 screenWidth = love.graphics.getWidth()
 screenHeight = love.graphics.getHeight()
 
@@ -70,11 +70,13 @@ function love.draw()
     end
 
     love.graphics.setColor(0, 0, 1)
-    love.graphics.printf(tostring(score.left), 10, 50 * sy, (screenWidth - 20)/10,
-                         "left", 0, 10, 10)
+    love.graphics.printf(tostring(score.left), 10, 50 * sy,
+                         (screenWidth - 20) / (10 * sx), "left", 0, 10 * sx,
+                         10 * sy)
     love.graphics.setColor(1, 0, 0)
-    love.graphics.printf(tostring(score.right), 10, 50 * sy, (screenWidth-20)/10,
-                         "right", 0, 10, 10)
+    love.graphics.printf(tostring(score.right), 10, 50 * sy,
+                         (screenWidth - 20) / (10 * sx), "right", 0, 10 * sx,
+                         10 * sy)
     love.graphics.setColor(1, 1, 1)
 
     -- center line
