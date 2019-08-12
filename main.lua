@@ -42,6 +42,14 @@ function love.update(dt)
 
     if gameSettings.started then
         gameSettings.timeLeft = gameSettings.timeLeft - dt
+
+        if (gameSettings.timeLeft < 0) then
+            gameSettings.started = false
+            gameSettings.timeLeft = gameSettings.time
+            resetPuck()
+            score.left = 0
+            score.right = 0
+        end
     end
 end
 
