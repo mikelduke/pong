@@ -44,6 +44,14 @@ function love.update(dt)
         gameSettings.timeLeft = gameSettings.timeLeft - dt
 
         if (gameSettings.timeLeft < 0) then
+            if score.left > score.right then
+                gameSettings.winner = "Blue Wins!"
+            elseif score.right > score.left then
+                gameSettings.winner = "Red Wins!"
+            elseif score.right == score.left then
+                gameSettings.winner = "Tie Game"
+            end
+
             gameSettings.started = false
             gameSettings.timeLeft = gameSettings.time
             resetPuck()
@@ -89,6 +97,15 @@ function love.draw()
                                 (centerLineThickness / 2), 0,
                             centerLineThickness, love.graphics.getHeight())
 
+    love.graphics.setColor(1, 1, 1)
+
+    -- puck and paddles
+    for i, o in ipairs(objects) do
+        love.graphics.draw(o.img, o.body:getX(), o.body:getY(), 0, 1, 1,
+                           o.img:getWidth() / 2, o.img:getHeight() / 2)
+    end
+
+    -- scores and timer
     love.graphics.setColor(0, 0, 1)
     love.graphics.printf(tostring(score.left), 10, 50 * sy,
                          (screenWidth - 20) / (10 * sx), "left", 0, 10 * sx,
@@ -101,18 +118,22 @@ function love.draw()
     love.graphics.printf(SecondsToClock(gameSettings.timeLeft), 10, 50 * sy,
                          (screenWidth - 20) / (10 * sx), "center", 0, 10 * sx,
                          10 * sy)
-    love.graphics.setColor(1, 1, 1)
 
-    -- puck and paddles
-    for i, o in ipairs(objects) do
-        love.graphics.draw(o.img, o.body:getX(), o.body:getY(), 0, 1, 1,
-                           o.img:getWidth() / 2, o.img:getHeight() / 2)
+    -- winner message
+    if (not gameSettings.started and
+        not (gameSettings.winner == nil or gameSettings.winner == '')) then
+        love.graphics.setColor(0, 1, 0)
+        love.graphics.printf(gameSettings.winner, 10, screenHeight / 2,
+                             (screenWidth - 20) / (10 * sx), "center", 0,
+                             10 * sx, 10 * sy)
+        love.graphics.setColor(1, 1, 1)
     end
 end
 
 function love.touchpressed(id, x, y, dx, dy, pressure)
     if not gameSettings.started then
         gameSettings.started = true
+        gameSettings.winner = nil
     end
 
     local isLeft = true
