@@ -40,7 +40,9 @@ function love.update(dt)
         score.left = score.left + 1
     end
 
-    gameSettings.timeLeft = gameSettings.timeLeft - dt
+    if gameSettings.started then
+        gameSettings.timeLeft = gameSettings.timeLeft - dt
+    end
 end
 
 function love.keypressed(key, scancode, isrepeat)
@@ -101,6 +103,10 @@ function love.draw()
 end
 
 function love.touchpressed(id, x, y, dx, dy, pressure)
+    if not gameSettings.started then
+        gameSettings.started = true
+    end
+
     local isLeft = true
     if (x > (screenWidth / 2)) then
         isLeft = false
@@ -299,7 +305,7 @@ function SecondsToClock(seconds)
     if seconds <= 0 then
         return "00:00"
     else
-        mins = string.format("%01.f", math.floor(seconds / 60))
+        mins = string.format("%02.f", math.floor(seconds / 60))
         secs = string.format("%02.f", math.floor(seconds - mins * 60))
         return mins .. ":" .. secs
     end
