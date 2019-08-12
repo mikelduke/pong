@@ -8,6 +8,7 @@ puckSize = 75
 wallThickness = 10
 centerLineThickness = 10
 goalSize = 300
+gameSettings = {time = 3 * 60, started = false, timeLeft = 3 * 60}
 
 world = nil
 
@@ -38,6 +39,8 @@ function love.update(dt)
         resetPuck()
         score.left = score.left + 1
     end
+
+    gameSettings.timeLeft = gameSettings.timeLeft - dt
 end
 
 function love.keypressed(key, scancode, isrepeat)
@@ -67,7 +70,14 @@ function love.draw()
                                 tostring(puck.body:getY()), 10, 40)
         love.graphics.print("Score " .. tostring(score.left) .. ":" ..
                                 tostring(score.right), 10, 50)
+        love.graphics.print("Game " .. tostring(gameSettings.timeLeft), 10, 60)
     end
+
+    -- center line
+    love.graphics.setColor(1, 1, 1)
+    love.graphics.rectangle("fill", love.graphics.getWidth() / 2 -
+                                (centerLineThickness / 2), 0,
+                            centerLineThickness, love.graphics.getHeight())
 
     love.graphics.setColor(0, 0, 1)
     love.graphics.printf(tostring(score.left), 10, 50 * sy,
@@ -77,13 +87,11 @@ function love.draw()
     love.graphics.printf(tostring(score.right), 10, 50 * sy,
                          (screenWidth - 20) / (10 * sx), "right", 0, 10 * sx,
                          10 * sy)
+    love.graphics.setColor(1, 1, 0)
+    love.graphics.printf(SecondsToClock(gameSettings.timeLeft), 10, 50 * sy,
+                         (screenWidth - 20) / (10 * sx), "center", 0, 10 * sx,
+                         10 * sy)
     love.graphics.setColor(1, 1, 1)
-
-    -- center line
-    love.graphics.setColor(1, 1, 1)
-    love.graphics.rectangle("fill", love.graphics.getWidth() / 2 -
-                                (centerLineThickness / 2), 0,
-                            centerLineThickness, love.graphics.getHeight())
 
     -- puck and paddles
     for i, o in ipairs(objects) do
@@ -283,4 +291,16 @@ function resetPuck()
     puck.body:setLinearVelocity(0, 0)
     puck.body:setX(screenWidth / 2)
     puck.body:setY(screenHeight / 2)
+end
+
+function SecondsToClock(seconds)
+    local seconds = tonumber(seconds)
+
+    if seconds <= 0 then
+        return "00:00"
+    else
+        mins = string.format("%01.f", math.floor(seconds / 60))
+        secs = string.format("%02.f", math.floor(seconds - mins * 60))
+        return mins .. ":" .. secs
+    end
 end
