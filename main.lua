@@ -1,6 +1,7 @@
 debug = false
 screenWidth = love.graphics.getWidth()
 screenHeight = love.graphics.getHeight()
+drawParticles = true
 
 updatetime = 0
 paddleSize = 200
@@ -31,6 +32,8 @@ function love.update(dt)
     updatetime = dt
 
     world:update(dt)
+    puck.pSystem:setPosition(puck.body:getX(), puck.body:getY())
+    puck.pSystem:update(dt)
 
     if (puck.body:getX() < 0) then
         resetPuck()
@@ -72,6 +75,8 @@ function love.keypressed(key, scancode, isrepeat)
         resetPuck()
         score.left = 0
         score.right = 0
+    elseif love.keyboard.isDown('p') then
+        drawParticles = not drawParticles
     end
 end
 
@@ -103,6 +108,11 @@ function love.draw()
     for i, o in ipairs(objects) do
         love.graphics.draw(o.img, o.body:getX(), o.body:getY(), 0, 1, 1,
                            o.img:getWidth() / 2, o.img:getHeight() / 2)
+    end
+
+    -- draw particle systems
+    if (drawParticles) then
+        love.graphics.draw(puck.pSystem, 0, 0)
     end
 
     -- scores and timer
@@ -306,6 +316,14 @@ function createPuck()
     puck.shape = love.physics.newCircleShape(puckSize / 2)
     puck.fixture = love.physics.newFixture(puck.body, puck.shape)
     puck.fixture:setRestitution(.9)
+
+    local pSystem = love.graphics.newParticleSystem(puck.img, puckSize)
+    pSystem:setParticleLifetime(0.2, 0.5)
+    pSystem:setLinearAcceleration(-100, -100, 100, 100)
+    pSystem:setColors(1, 1, 0, 255, 1, 1, 1, 255)
+    pSystem:setSizes(1.0, 0.01)
+    pSystem:setEmissionRate(60)
+    puck.pSystem = pSystem
 
     table.insert(objects, puck)
 end
