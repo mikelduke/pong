@@ -216,54 +216,6 @@ function createWalls()
     wallB.shape = love.physics.newRectangleShape(screenWidth, wallThickness)
     wallB.fixture = love.physics.newFixture(wallB.body, wallB.shape)
     table.insert(objects, wallB)
-
-    local goalWallSegmentHeight = (screenHeight - goalSize) / 2
-    wallLT = {
-        img = getRectangle(wallThickness, goalWallSegmentHeight,
-                           {r = 1, g = 1, b = 0})
-    }
-    wallLT.body = love.physics.newBody(world, wallThickness / 2,
-                                       goalWallSegmentHeight / 2, "static")
-    wallLT.shape = love.physics.newRectangleShape(wallThickness,
-                                                  goalWallSegmentHeight)
-    wallLT.fixture = love.physics.newFixture(wallLT.body, wallLT.shape)
-    table.insert(objects, wallLT)
-
-    wallLB = {
-        img = getRectangle(wallThickness, goalWallSegmentHeight,
-                           {r = 1, g = 1, b = 0})
-    }
-    wallLB.body = love.physics.newBody(world, wallThickness / 2, screenHeight -
-                                           (goalWallSegmentHeight / 2), "static")
-    wallLB.shape = love.physics.newRectangleShape(wallThickness,
-                                                  goalWallSegmentHeight)
-    wallLB.fixture = love.physics.newFixture(wallLB.body, wallLB.shape)
-    table.insert(objects, wallLB)
-
-    -- left and right walls with goal holes
-    local goalWallSegmentHeight = (screenHeight - goalSize) / 2
-    wallRT = {
-        img = getRectangle(wallThickness, goalWallSegmentHeight,
-                           {r = 1, g = 1, b = 0})
-    }
-    wallRT.body = love.physics.newBody(world, screenWidth - (wallThickness / 2),
-                                       goalWallSegmentHeight / 2, "static")
-    wallRT.shape = love.physics.newRectangleShape(wallThickness,
-                                                  goalWallSegmentHeight)
-    wallRT.fixture = love.physics.newFixture(wallRT.body, wallRT.shape)
-    table.insert(objects, wallRT)
-
-    wallRB = {
-        img = getRectangle(wallThickness, goalWallSegmentHeight,
-                           {r = 1, g = 1, b = 0})
-    }
-    wallRB.body = love.physics.newBody(world, screenWidth - (wallThickness / 2),
-                                       screenHeight -
-                                           (goalWallSegmentHeight / 2), "static")
-    wallRB.shape = love.physics.newRectangleShape(wallThickness,
-                                                  goalWallSegmentHeight)
-    wallRB.fixture = love.physics.newFixture(wallRB.body, wallRB.shape)
-    table.insert(objects, wallRB)
 end
 
 function setScale()
