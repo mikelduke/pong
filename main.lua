@@ -81,10 +81,6 @@ function love.keypressed(key, scancode, isrepeat)
 end
 
 function love.draw()
-    if debug then
-        drawDebug()
-    end
-
     -- center line
     love.graphics.setColor(1, 1, 1)
     love.graphics.rectangle("fill", love.graphics.getWidth() / 2 -
@@ -126,6 +122,10 @@ function love.draw()
                              (screenWidth - 20) / (10 * sx), "center", 0,
                              10 * sx, 10 * sy)
         love.graphics.setColor(1, 1, 1)
+    end
+
+    if debug then
+        drawDebug()
     end
 end
 
