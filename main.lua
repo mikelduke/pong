@@ -90,7 +90,8 @@ function love.draw()
                                 " scale " .. tostring(sx) .. "x" .. tostring(sy),
                             10, 30)
         love.graphics.print("Puck " .. tostring(puck.body:getX()) .. ", " ..
-                                tostring(puck.body:getY()), 10, 40)
+                                tostring(puck.body:getY()) .. "   v: " ..
+                                puck.body:getLinearVelocity(), 10, 40)
         love.graphics.print("Score " .. tostring(score.left) .. ":" ..
                                 tostring(score.right), 10, 50)
         love.graphics.print("Game " .. tostring(gameSettings.timeLeft), 10, 60)
@@ -144,6 +145,15 @@ function love.touchpressed(id, x, y, dx, dy, pressure)
     if not gameSettings.started then
         gameSettings.started = true
         gameSettings.winner = nil
+    end
+
+    -- prevent puck from being stuck in x direction, and start motion after resetting puck
+    if math.abs(puck.body:getLinearVelocity()) < 2 then
+        local v = 500
+        if math.random(0, 1) < 0.5 then
+            v = v * -1
+        end
+        puck.body:setLinearVelocity(v, 0)
     end
 
     local isLeft = true
