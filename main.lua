@@ -136,7 +136,7 @@ function love.touchpressed(id, x, y, dx, dy, pressure)
     end
 
     -- prevent puck from being stuck in x direction, and start motion after resetting puck
-    if math.abs(puck.body:getLinearVelocity()) < 2 then
+    if math.abs(puck.body:getLinearVelocity()) < 10 then
         local v = 500
         if math.random(0, 1) < 0.5 then
             v = v * -1
@@ -213,6 +213,7 @@ function createWalls()
                                       "static")
     wallT.shape = love.physics.newRectangleShape(screenWidth, wallThickness)
     wallT.fixture = love.physics.newFixture(wallT.body, wallT.shape)
+    wallT.fixture:setFriction(0)
     table.insert(objects, wallT)
 
     wallB = {
@@ -276,6 +277,8 @@ function createPuck()
     puck = {img = getCirclePaddle(puckSize, {r = 1, g = 1, b = 0})}
     puck.body = love.physics.newBody(world, screenWidth / 2, screenHeight / 2,
                                      "dynamic")
+    puck.body:setLinearDamping(-.20)
+    puck.body:setBullet(true)
     puck.shape = love.physics.newCircleShape(puckSize / 2)
     puck.fixture = love.physics.newFixture(puck.body, puck.shape)
     puck.fixture:setRestitution(.9)
