@@ -5,11 +5,11 @@ drawParticles = true
 
 updatetime = 0
 paddleSize = {w = 50, h = 400}
-puckSize = 75
+puckSize = 50
 wallThickness = 10
 centerLineThickness = 10
 goalSize = 300
-paddleOffset = 200
+paddleOffset = 100
 gameSettings = {time = 3 * 60, started = false, timeLeft = 3 * 60}
 
 world = nil
@@ -246,6 +246,7 @@ function createPaddles()
     }
     leftPaddle.body = love.physics.newBody(world, paddleOffset,
                                            screenHeight / 2, "dynamic")
+    leftPaddle.body:setFixedRotation(true)
     leftPaddle.shape = love.physics
                            .newRectangleShape(paddleSize.w, paddleSize.h)
     leftPaddle.fixture = love.physics.newFixture(leftPaddle.body,
@@ -258,6 +259,7 @@ function createPaddles()
     }
     rightPaddle.body = love.physics.newBody(world, screenWidth - paddleOffset,
                                             screenHeight / 2, "dynamic")
+    rightPaddle.body:setFixedRotation(true)
     rightPaddle.shape = love.physics.newRectangleShape(paddleSize.w,
                                                        paddleSize.h)
     rightPaddle.fixture = love.physics.newFixture(rightPaddle.body,
