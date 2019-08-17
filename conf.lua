@@ -1,6 +1,6 @@
 -- Configuration
 function love.conf(t)
-    t.title = "Air Hockey"
+    t.title = "Pong"
     t.version = "11.1"
     t.window.resizable = true
     t.window.fullscreen = true

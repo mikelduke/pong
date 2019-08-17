@@ -4,7 +4,7 @@
 
 ./bin/assemble.sh
 
-NAME="air-hockey"
+NAME="pong"
 
 echo "Making $NAME.love dist"
 
