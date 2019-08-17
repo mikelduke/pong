@@ -9,6 +9,7 @@ puckSize = 75
 wallThickness = 10
 centerLineThickness = 10
 goalSize = 300
+paddleOffset = 200
 gameSettings = {time = 3 * 60, started = false, timeLeft = 3 * 60}
 
 world = nil
@@ -25,7 +26,6 @@ function love.load(arg)
     createPaddles()
     createPuck()
     createWalls()
-    createGoals()
 end
 
 function love.update(dt)
@@ -153,18 +153,18 @@ function love.touchpressed(id, x, y, dx, dy, pressure)
 
     if (isLeft and leftPaddle.touchid == nil) then
         leftPaddle.touchid = id
-        leftPaddle.joint:setTarget(x, y)
+        leftPaddle.joint:setTarget(paddleOffset, y)
     elseif (not isLeft and rightPaddle.touchid == nil) then
         rightPaddle.touchid = id
-        rightPaddle.joint:setTarget(x, y)
+        rightPaddle.joint:setTarget(screenWidth - paddleOffset, y)
     end
 end
 
 function love.touchmoved(id, x, y, dx, dy, pressure)
     if (leftPaddle.touchid == id and x <= screenWidth / 2) then
-        leftPaddle.joint:setTarget(x, y)
+        leftPaddle.joint:setTarget(paddleOffset, y)
     elseif (rightPaddle.touchid == id and x > screenWidth / 2) then
-        rightPaddle.joint:setTarget(x, y)
+        rightPaddle.joint:setTarget(screenWidth - paddleOffset, y)
     end
 end
 
@@ -275,6 +275,7 @@ function setScale()
     puckSize = puckSize * sx
     centerLineThickness = centerLineThickness * sx
     goalSize = goalSize * sy
+    paddleOffset = paddleOffset * sx
 end
 
 function createPaddles()
@@ -282,27 +283,24 @@ function createPaddles()
         img = getCirclePaddle(paddleSize, {r = 0, g = 0, b = 1}),
         touchid = nil
     }
-    leftPaddle.body = love.physics.newBody(world, paddleSize * 1.5,
+    leftPaddle.body = love.physics.newBody(world, paddleOffset,
                                            screenHeight / 2, "dynamic")
     leftPaddle.shape = love.physics.newCircleShape(paddleSize / 2)
     leftPaddle.fixture = love.physics.newFixture(leftPaddle.body,
                                                  leftPaddle.shape)
-    leftPaddle.joint = love.physics.newMouseJoint(leftPaddle.body,
-                                                  paddleSize * 1.5,
+    leftPaddle.joint = love.physics.newMouseJoint(leftPaddle.body, paddleOffset,
                                                   screenHeight / 2)
     rightPaddle = {
         img = getCirclePaddle(paddleSize, {r = 1, g = 0, b = 0}),
         touchid = nil
     }
-    rightPaddle.body = love.physics.newBody(world,
-                                            screenWidth - (paddleSize * 1.5),
+    rightPaddle.body = love.physics.newBody(world, screenWidth - paddleOffset,
                                             screenHeight / 2, "dynamic")
     rightPaddle.shape = love.physics.newCircleShape(paddleSize / 2)
     rightPaddle.fixture = love.physics.newFixture(rightPaddle.body,
                                                   rightPaddle.shape)
     rightPaddle.joint = love.physics.newMouseJoint(rightPaddle.body,
-                                                   screenWidth -
-                                                       (paddleSize * 1.5),
+                                                   screenWidth - paddleOffset,
                                                    screenHeight / 2)
 
     table.insert(objects, leftPaddle)
@@ -326,18 +324,6 @@ function createPuck()
     puck.pSystem = pSystem
 
     table.insert(objects, puck)
-end
-
-function createGoals()
-    -- leftGoal = {
-    --     img = getRectangle(goalSize.w, goalSize.h, {r = 0, g = 0, b = 1})
-    -- }
-    -- rightGoal = {
-    --     img = getRectangle(goalSize.w, goalSize.h, {r = 1, g = 0, b = 0})
-    -- }
-
-    -- table.insert(objects, leftGoal)
-    -- table.insert(objects, rightGoal)
 end
 
 function resetPuck()
