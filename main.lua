@@ -4,7 +4,7 @@ screenHeight = love.graphics.getHeight()
 drawParticles = true
 
 updatetime = 0
-paddleSize = 200
+paddleSize = {w = 50, h = 400}
 puckSize = 75
 wallThickness = 10
 centerLineThickness = 10
@@ -82,19 +82,7 @@ end
 
 function love.draw()
     if debug then
-        love.graphics.setColor(1, 1, 1)
-        love.graphics.print("DT: " .. tostring(updatetime), 10, 10)
-        love.graphics.print("FPS: " .. tostring(1.0 / updatetime), 10, 20)
-        love.graphics.print("Screen " .. tostring(love.graphics.getWidth()) ..
-                                "x" .. tostring(love.graphics.getHeight()) ..
-                                " scale " .. tostring(sx) .. "x" .. tostring(sy),
-                            10, 30)
-        love.graphics.print("Puck " .. tostring(puck.body:getX()) .. ", " ..
-                                tostring(puck.body:getY()) .. "   v: " ..
-                                puck.body:getLinearVelocity(), 10, 40)
-        love.graphics.print("Score " .. tostring(score.left) .. ":" ..
-                                tostring(score.right), 10, 50)
-        love.graphics.print("Game " .. tostring(gameSettings.timeLeft), 10, 60)
+        drawDebug()
     end
 
     -- center line
@@ -197,6 +185,16 @@ function getCirclePaddle(size, color)
     return paddle
 end
 
+function getPaddle(size, color)
+    local paddle = love.graphics.newCanvas(size.w, size.h)
+    love.graphics.setCanvas(paddle)
+    love.graphics.setColor(color.r, color.g, color.b, 1)
+    love.graphics.rectangle("fill", 0, 0, size.w, size.h, 0, 1, 1, size.w / 2,
+                            size.h / 2)
+    love.graphics.setCanvas()
+    return paddle
+end
+
 function getRectangle(width, height, color)
     local rect = love.graphics.newCanvas(width, height)
     love.graphics.setCanvas(rect)
@@ -232,7 +230,8 @@ function setScale()
     local width, height = love.graphics.getDimensions()
     sx = width / 1920
     sy = height / 1080
-    paddleSize = paddleSize * sx
+    paddleSize.w = paddleSize.w * sx
+    paddleSize.h = paddleSize.h * sy
     wallThickness = wallThickness * sx
     puckSize = puckSize * sx
     centerLineThickness = centerLineThickness * sx
@@ -242,23 +241,25 @@ end
 
 function createPaddles()
     leftPaddle = {
-        img = getCirclePaddle(paddleSize, {r = 0, g = 0, b = 1}),
+        img = getPaddle(paddleSize, {r = 0, g = 0, b = 1}),
         touchid = nil
     }
     leftPaddle.body = love.physics.newBody(world, paddleOffset,
                                            screenHeight / 2, "dynamic")
-    leftPaddle.shape = love.physics.newCircleShape(paddleSize / 2)
+    leftPaddle.shape = love.physics
+                           .newRectangleShape(paddleSize.w, paddleSize.h)
     leftPaddle.fixture = love.physics.newFixture(leftPaddle.body,
                                                  leftPaddle.shape)
     leftPaddle.joint = love.physics.newMouseJoint(leftPaddle.body, paddleOffset,
                                                   screenHeight / 2)
     rightPaddle = {
-        img = getCirclePaddle(paddleSize, {r = 1, g = 0, b = 0}),
+        img = getPaddle(paddleSize, {r = 1, g = 0, b = 0}),
         touchid = nil
     }
     rightPaddle.body = love.physics.newBody(world, screenWidth - paddleOffset,
                                             screenHeight / 2, "dynamic")
-    rightPaddle.shape = love.physics.newCircleShape(paddleSize / 2)
+    rightPaddle.shape = love.physics.newRectangleShape(paddleSize.w,
+                                                       paddleSize.h)
     rightPaddle.fixture = love.physics.newFixture(rightPaddle.body,
                                                   rightPaddle.shape)
     rightPaddle.joint = love.physics.newMouseJoint(rightPaddle.body,
@@ -303,5 +304,37 @@ function SecondsToClock(seconds)
         mins = string.format("%02.f", math.floor(seconds / 60))
         secs = string.format("%02.f", math.floor(seconds - mins * 60))
         return mins .. ":" .. secs
+    end
+end
+
+function drawDebug()
+    love.graphics.setColor(1, 1, 1)
+    love.graphics.print("DT: " .. tostring(updatetime), 10, 10)
+    love.graphics.print("FPS: " .. tostring(1.0 / updatetime), 10, 20)
+    love.graphics.print(
+        "Screen " .. tostring(love.graphics.getWidth()) .. "x" ..
+            tostring(love.graphics.getHeight()) .. " scale " .. tostring(sx) ..
+            "x" .. tostring(sy), 10, 30)
+    love.graphics.print("Puck " .. tostring(puck.body:getX()) .. ", " ..
+                            tostring(puck.body:getY()) .. "   v: " ..
+                            puck.body:getLinearVelocity(), 10, 40)
+    love.graphics.print("Score " .. tostring(score.left) .. ":" ..
+                            tostring(score.right), 10, 50)
+    love.graphics.print("Game " .. tostring(gameSettings.timeLeft), 10, 60)
+
+    for _, body in pairs(world:getBodies()) do
+        for _, fixture in pairs(body:getFixtures()) do
+            local shape = fixture:getShape()
+
+            if shape:typeOf("CircleShape") then
+                local cx, cy = body:getWorldPoints(shape:getPoint())
+                love.graphics.circle("fill", cx, cy, shape:getRadius())
+            elseif shape:typeOf("PolygonShape") then
+                love.graphics.polygon("fill",
+                                      body:getWorldPoints(shape:getPoints()))
+            else
+                love.graphics.line(body:getWorldPoints(shape:getPoints()))
+            end
+        end
     end
 end
