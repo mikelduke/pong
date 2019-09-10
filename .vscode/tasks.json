@@ -1,0 +1,25 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "run love",
+            "type": "shell",
+            "command": "love ."
+        },
+        {
+            "label": "copy to love sync folder",
+            "type": "shell",
+            "command": "bin/assemble.sh && cp -rf temp/* ~/love2d/",
+            "problemMatcher": [],
+            "isBackground": true
+        },
+        {
+            "label":"build dist",
+            "type": "shell",
+            "command": "bin/dist.sh && rm -rf temp",
+            "problemMatcher":[],
+        }
+    ]
+}
